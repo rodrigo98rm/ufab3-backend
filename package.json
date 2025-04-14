@@ -19,7 +19,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.2"
+    "@prisma/client": "^6.6.0",
+    "express": "^4.21.2",
+    "prisma": "^6.6.0"
   },
   "imports": {
     "#*": "./src/*"

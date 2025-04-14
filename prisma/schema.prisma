@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  name         String @db.VarChar()
+  lastName     String @db.VarChar()
+  email        String @unique @db.VarChar()
+  passwordHash String @db.VarChar(64)
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  Transaction      Transaction[]
+  CurrentUserAsset CurrentUserAsset[]
+}
+
+model Asset {
+  id               Int                @id @default(autoincrement())
+  ticker           String             @db.VarChar(8)
+  name             String             @db.VarChar(128)
+  category         String             @db.VarChar(64) // Ações / FIIs / ETFs / Renda Fixa / etc
+  cnpj             String             @db.VarChar(18) // XX.XXX.XXX/0001-XX
+  Transaction      Transaction[]
+  CurrentUserAsset CurrentUserAsset[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  assetId     Int
+  side        String   @db.Char(1) // C for credit, D for debit
+  type        String   @db.VarChar(64) // Compra / Venda / Liquidação / JCP / etc
+  description String   @db.VarChar(256)
+  institution String   @db.VarChar(256)
+  amount      Decimal  @db.Decimal(10, 2)
+  value       Decimal  @db.Decimal(10, 2)
+  totalValue  Decimal  @db.Decimal(10, 2)
+  executedAt  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id])
+  asset Asset @relation(fields: [assetId], references: [id])
+}
+
+model CurrentUserAsset {
+  id           Int     @id @default(autoincrement())
+  userId       Int
+  assetId      Int
+  averagePrice Decimal @db.Decimal(10, 2)
+  totalAmount  Int
+
+  user  User  @relation(fields: [userId], references: [id])
+  asset Asset @relation(fields: [assetId], references: [id])
+}
