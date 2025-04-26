@@ -16,8 +16,8 @@ await prisma.user.create({
     passwordHash: "senhateste",
   },
 });
-export const parserXlsx = async (filePath: string) => {
-  const workbook = XLSX.readFile(filePath);
+export const parserXlsx = async (buffer: Buffer) => {
+  const workbook = XLSX.read(buffer, { type: "buffer" });
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
   const data: RawTransaction[] = XLSX.utils.sheet_to_json(sheet);
