@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Asset" ALTER COLUMN "category" DROP NOT NULL,
+ALTER COLUMN "cnpj" DROP NOT NULL;
