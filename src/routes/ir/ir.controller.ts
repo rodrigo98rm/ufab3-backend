@@ -1,10 +1,14 @@
 import { Router } from "express";
 
+import { prisma } from "../prisma";
+
 const router = Router();
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const result = await prisma.transaction.findMany();
+
   res.status(200).json({
-    message: "IR API",
+    transactions: result,
   });
 });
 
