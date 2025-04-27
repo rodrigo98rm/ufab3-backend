@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Request, Response } from "express";
 import { hashSync, compareSync } from "bcrypt";
 import { prisma } from "../prisma";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 export const JWT_SECRET = process.env.JWT_SECRET!;
 
