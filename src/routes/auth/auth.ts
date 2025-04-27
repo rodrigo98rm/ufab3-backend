@@ -9,21 +9,25 @@ export const JWT_SECRET = process.env.JWT_SECRET!;
 const authRoutes: Router = Router();
 
 authRoutes.post("/sign", async (req: Request, res: Response) => {
-  const { email, passwordHash, name, lastName } = req.body;
+  const { email, lastName, name, password } = req.body;
 
-  let user = await prisma.user.findFirst({ where: { email } });
+  const user = await prisma.user.findFirst({ where: { email } });
   if (user) {
-    throw Error("Usuario ja existe");
+    res.status(400).json({error:"Email ja existe!"});
+    return
   }
-  user = await prisma.user.create({
+  const { createdAt, updatedAt, passwordHash: _, ...rest} = await prisma.user.create({
     data: {
-      name,
-      lastName,
       email,
-      passwordHash: hashSync(passwordHash, 10),
+      lastName,
+      name,
+      passwordHash: hashSync(password as string, 10),
     },
   });
-  res.json(user);
+
+  const response = { ...rest };
+
+  res.json(response);
 });
 
 authRoutes.post("/login", async (req: Request, res: Response) => {
@@ -31,10 +35,13 @@ authRoutes.post("/login", async (req: Request, res: Response) => {
 
   let user = await prisma.user.findFirst({ where: { email } });
   if (!user) {
-    throw Error("Usuario nao existe");
+    res.status(400).json({error:"Email nao existe!"});
+    return
   }
+  
   if (!compareSync(passwordHash, user.passwordHash)) {
-    throw Error("Senha incorreta");
+    res.status(400).json({error:"Senha incorreta!"});
+    return;
   }
   const token = jwt.sign(
     {
