@@ -85,6 +85,25 @@ router.get("/:ticker", async (req: Request, res: Response) => {
     }
   });
 
+  const earningTansactions = await prisma.transaction.findMany({
+    orderBy: {
+      executedAt: "asc",
+    },
+    where: {
+      asset: {
+        ticker,
+      },
+      type: "Rendimento",
+      userId,
+    },
+  });
+
+  let totalEarnings = 0;
+  earningTansactions.forEach((transaction) => {
+    totalEarnings +=
+      transaction.amount.toNumber() * transaction.value.toNumber();
+  });
+
   const asset = await prisma.asset.findFirst({
     where: {
       ticker,
@@ -124,7 +143,7 @@ router.get("/:ticker", async (req: Request, res: Response) => {
       cnpj: asset.cnpj || "000.000.000/0000-00",
       code: "03 - Fundos de Investimento Imobiliário",
       description: `${totalQuantity} cotas do FII de código ${asset.ticker} a um preço médio de R$ ${averagePrice.toFixed(2).replace(".", ",")}`,
-      earnings: 0,
+      earnings: totalEarnings,
       group: "07 - Fundos",
       location: "Brasil",
       origin: "Brasil",
@@ -150,7 +169,7 @@ router.get("/:ticker", async (req: Request, res: Response) => {
       cnpj: asset.cnpj || "000.000.000/0000-00",
       code: "01 - Ações (inclusive as listadas em Bolsa)",
       description: `${totalQuantity} ações da empresa ${asset.ticker} a um preço médio de R$ ${averagePrice.toFixed(2).replace(".", ",")}`,
-      earnings: 0,
+      earnings: totalEarnings,
       group: "03 - Participações Societárias",
       location: "Brasil",
       origin: "Brasil",
