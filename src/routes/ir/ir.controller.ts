@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { Request, Response, Router } from "express";
 
 import { Prisma } from "../../../generated/prisma";
@@ -190,8 +188,6 @@ router.get("/:ticker", async (req: Request, res: Response) => {
     res.json(response);
     return;
   }
-
-  console.log(transactions);
 });
 
 export default router;

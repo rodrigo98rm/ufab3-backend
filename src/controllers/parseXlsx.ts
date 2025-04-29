@@ -1,9 +1,9 @@
 import XLSX from "xlsx";
 
-import { RawTransaction } from "./tablesInterface";
 import { PrismaClient } from "../../generated/prisma/index.js";
-import { regexTicker, regexProduto } from "../helpers/regexHelpers.js";
 import { formatDate, formatValue } from "../helpers/formatHelpers.js";
+import { regexProduto, regexTicker } from "../helpers/regexHelpers.js";
+import { RawTransaction } from "./tablesInterface";
 
 const prisma = new PrismaClient();
 
@@ -23,7 +23,7 @@ const parseTransations = async (data: RawTransaction[]) => {
   const userId = 1;
 
   for (const transacao of data) {
-    const ticker: string = regexTicker(transacao["Produto"]);
+    const ticker: string = regexTicker(transacao.Produto);
 
     if (!ticker) continue;
 
@@ -37,8 +37,8 @@ const parseTransations = async (data: RawTransaction[]) => {
       } else {
         const newAsset = await prisma.asset.create({
           data: {
+            name: regexProduto(transacao.Produto),
             ticker,
-            name: regexProduto(transacao["Produto"]),
           },
         });
         assetId = newAsset.id;
@@ -55,24 +55,24 @@ const parseTransations = async (data: RawTransaction[]) => {
     const side =
       transacao["Entrada/Saída"].toLowerCase() === "credito" ? "C" : "D";
     const description = "-";
-    const executedAt = formatDate(transacao["Data"]);
+    const executedAt = formatDate(transacao.Data);
     const type = transacao["Movimentação"];
     const institution = transacao["Instituição"];
-    const amount = transacao["Quantidade"];
+    const amount = transacao.Quantidade;
     const value = formatValue(transacao["Preço unitário"]);
     const totalValue = formatValue(transacao["Valor da Operação"]);
 
     transactionsArray.push({
-      side,
+      amount,
+      assetId,
       description,
       executedAt,
-      type,
       institution,
-      amount,
-      value,
+      side,
       totalValue,
+      type,
       userId,
-      assetId,
+      value,
     });
   }
 

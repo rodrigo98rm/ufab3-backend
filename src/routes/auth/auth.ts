@@ -31,7 +31,7 @@ authRoutes.post("/sign", async (req: Request, res: Response) => {
 });
 
 authRoutes.post("/login", async (req: Request, res: Response) => {
-  const { email, passwordHash } = req.body;
+  const { email, password } = req.body;
 
   let user = await prisma.user.findFirst({ where: { email } });
   if (!user) {
@@ -39,7 +39,7 @@ authRoutes.post("/login", async (req: Request, res: Response) => {
     return
   }
   
-  if (!compareSync(passwordHash, user.passwordHash)) {
+  if (!compareSync(password, user.passwordHash)) {
     res.status(400).json({error:"Senha incorreta!"});
     return;
   }
