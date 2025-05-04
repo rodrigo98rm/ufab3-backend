@@ -7,20 +7,19 @@ import { RawTransaction } from "./tablesInterface";
 
 const prisma = new PrismaClient();
 
-export const parserXlsx = async (buffer: Buffer) => {
+export const parserXlsx = async (buffer: Buffer, userId: number) => {
   const workbook = XLSX.read(buffer, { type: "buffer" });
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
   const data: RawTransaction[] = XLSX.utils.sheet_to_json(sheet);
-  parseTransations(data);
+  void parseTransations(data, userId);
   return "Operações enviadas";
 };
 
-const parseTransations = async (data: RawTransaction[]) => {
+const parseTransations = async (data: RawTransaction[], userId: number) => {
   const assetCache = new Map<string, number>();
   let assetId: number | undefined;
   const transactionsArray = [];
-  const userId = 1;
 
   for (const transacao of data) {
     const ticker: string = regexTicker(transacao.Produto);

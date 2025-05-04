@@ -16,7 +16,7 @@ const assetSelect = {
 type Asset = Prisma.AssetGetPayload<{ select: typeof assetSelect }>;
 
 router.get("/", async (req: Request, res: Response) => {
-  const userId = 1; // TODO: get userId from request
+  const userId = req.user.id;
 
   const result = await prisma.transaction.findMany({
     distinct: ["assetId"],
@@ -53,7 +53,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/:ticker", async (req: Request, res: Response) => {
-  const userId = 1; // TODO: get userId from request
+  const userId = req.user.userId;
 
   const { ticker } = req.params;
 
