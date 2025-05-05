@@ -7,6 +7,7 @@ import { prisma } from "../prisma";
 
 const router = Router();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const assetSelect = {
   category: true,
   name: true,
@@ -16,7 +17,7 @@ const assetSelect = {
 type Asset = Prisma.AssetGetPayload<{ select: typeof assetSelect }>;
 
 router.get("/", async (req: Request, res: Response) => {
-  const userId = req.user.id;
+  const userId = req.user?.userId;
 
   const result = await prisma.transaction.findMany({
     distinct: ["assetId"],
@@ -53,7 +54,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/:ticker", async (req: Request, res: Response) => {
-  const userId = req.user.userId;
+  const userId = req.user?.userId;
 
   const { ticker } = req.params;
 

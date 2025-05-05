@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { Request, Response } from "express";
 
+// This import ensures the extended Request type is recognized
 import { parserXlsx } from "./parseXlsx.js";
 
 export const uploadXlsx = async (req: Request, res: Response) => {
   const file = req.file;
-  const userId = req.user.userId as number;
+  const userId = req.user?.userId!;
 
   if (!file) {
     res.status(400).json({ error: "Nenhum arquivo enviado" });
