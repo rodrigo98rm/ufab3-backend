@@ -3,7 +3,7 @@ import express, { json } from "express";
 const app = express();
 const port = process.env.PORT ?? "9001";
 
-import routes from "./routes/index";
+import routes from "./routes";
 
 app.use(json());
 
